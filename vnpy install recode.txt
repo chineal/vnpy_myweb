@@ -1,0 +1,25 @@
+Anaconda3-2023.03-1-Windows-x86_64.exe
+path += C:\Users\Administrator\anaconda3
+path += C:\Users\Administrator\anaconda3\Scripts
+conda -V
+
+conda create -n vnpy_web
+conda activate vnpy_web
+conda install tornado
+conda install flask
+conda install requests
+
+conda create -n vnpy_run --clone root
+conda activate vnpy_run
+cd D:\Chan\vnpy		        .\install.bat
+conda install tzlocal
+conda install PySide6
+conda install deap
+conda install peewee
+
+solved_packageMissInInstalling_mu_visual_cpp_build_tools_2015_update_3_x64_dvd_dfd9a39c.iso
+cd ..\vnpy_ctp		        python .\setup.py install
+cd ..\vnpy_ctastrategy	    python .\setup.py install
+cd ..\vnpy_ctabacktester	python .\setup.py install
+cd ..\vnpy_datamanager	    python .\setup.py install
+cd ..\vnpy_sqlite		    python .\setup.py install

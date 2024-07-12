@@ -13,15 +13,13 @@ conda create -n vnpy_myweb
 
 conda install -n vnpy_run pip
 conda install pip
-conda install tornado
-conda install flask
-conda install requests
 
 conda activate vnpy_run
 conda deactivate
 conda remove --name vnpy_run
-```
 
+python .\run.py
+```
 # nginx
 ```
 start nginx
