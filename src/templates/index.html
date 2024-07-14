@@ -49,9 +49,35 @@
             .btn-red input:not(:last-child) {
                 border-bottom: none; /* Prevent double borders */
             }
+
             /* Add a background color on hover */
-            .btn-red input:hover {
-                background-color: #8e3e3e;
+            .btn-yellow input:hover {
+                background-color: #8e863e;
+            }
+            .btn-yellow {
+                margin: auto;
+                width: 95%;
+                border: 3px solid #abad21;
+                padding: 10px;
+                margin-top: 90px;
+            }
+            .btn-yellow input {
+                background-color: #adaf4c; /* Green background */
+                border: 1px solid rgb(126, 128, 0); /* Green border */
+                color: white; /* White text */
+                padding: 10px 24px; /* Some padding */
+                cursor: pointer; /* Pointer/hand icon */
+                width: 100%; /* Set a width if needed */
+                display: block; /* Make the buttons appear below each other */
+                font-size: 50px;
+                margin-bottom: 30px;
+            }
+            .btn-yellow input:not(:last-child) {
+                border-bottom: none; /* Prevent double borders */
+            }
+            /* Add a background color on hover */
+            .btn-yellow input:hover {
+                background-color: #8d8e3e;
             }
         </style>
         <script src="{{url_for('static', filename='jquery-3.7.1.min.js')}}"></script>
@@ -87,6 +113,58 @@
                     alert("平仓请求已取消");
                 }
             }
+            function buyopen(key)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "/buyopen?key=" + key,
+                    data: {},
+                    dataType: "JSON",
+                    success: function(result){},
+                    error: function(jqXHR, textStatus, errorThrown){
+                        alert("服务器错误，请联系管理员！")
+                    }
+                });
+            }
+            function sellopen(key)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "/sellopen?key=" + key,
+                    data: {},
+                    dataType: "JSON",
+                    success: function(result){},
+                    error: function(jqXHR, textStatus, errorThrown){
+                        alert("服务器错误，请联系管理员！")
+                    }
+                });
+            }
+            function buyclose(key)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "/buyclose?key=" + key,
+                    data: {},
+                    dataType: "JSON",
+                    success: function(result){},
+                    error: function(jqXHR, textStatus, errorThrown){
+                        alert("服务器错误，请联系管理员！")
+                    }
+                });
+            }
+            function sellclose(key)
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "/sellclose?key=" + key,
+                    data: {},
+                    dataType: "JSON",
+                    success: function(result){},
+                    error: function(jqXHR, textStatus, errorThrown){
+                        alert("服务器错误，请联系管理员！")
+                    }
+                });
+            }
         </script>
     </head>
     <body>
@@ -101,6 +179,13 @@
             <input type="button" value="上证缠论量化交易手动平仓" onclick="quetion('8126')">
             <input type="button" value="中证缠论量化交易手动平仓" onclick="quetion('8127')">
             <input type="button" value="中千缠论量化交易手动平仓" onclick="quetion('8128')">
+        </div>
+        <div class="btn-yellow">
+            <input type="button" value="策略逻辑连通测试" onclick="check('8123')">
+            <input type="button" value="策略逻辑买开测试" onclick="buyopen('8123')">
+            <input type="button" value="策略逻辑卖开测试" onclick="sellopen('8123')">
+            <input type="button" value="策略逻辑买平测试" onclick="buyclose('8123')">
+            <input type="button" value="策略逻辑卖平测试" onclick="sellclose('8123')">
         </div>
     </body>
 </html>
