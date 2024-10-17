@@ -15,8 +15,8 @@ def requests_get(url):
 
 # 假设我们有一个URL列表  
 urls = [  
-    'https://5fb3-115-239-222-10.ngrok-free.app/list'
-    #'http://localhost:8123/list'
+    #'https://5fb3-115-239-222-10.ngrok-free.app/list',
+    'http://localhost:8123/list'
     # ... 添加更多URL  
 ]  
   
@@ -102,7 +102,7 @@ class MyHandler(BaseHTTPRequestHandler):
                     {'count': 2, 'limit': 3}
                 ]
             }
-            response = {'code': 20000, 'data': [config, config]}
+            response = {'code': 20000, 'data': config}
         
         else:
             print("=====server: main stamp:%s path:%s?%s" % (stamp, parse.path, parse.query))
