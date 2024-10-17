@@ -1,4 +1,6 @@
+import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import logging
 from multiprocessing import Process
 from urllib.parse import parse_qs, urlparse
 import json
@@ -13,8 +15,8 @@ def requests_get(url):
 
 # 假设我们有一个URL列表  
 urls = [  
-    'https://5fb3-115-239-222-10.ngrok-free.app/list',
-    'http://localhost:8123/list'
+    'https://5fb3-115-239-222-10.ngrok-free.app/list'
+    #'http://localhost:8123/list'
     # ... 添加更多URL  
 ]  
   
@@ -29,7 +31,12 @@ def fetch_data(url):
         print(f"Error fetching {url}: {e}")  
 
 class MyHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        pass
+
     def do_GET(self):
+        now = datetime.datetime.now()
+        stamp = now.strftime("%Y-%m-%d %H:%M:%S")
         parse = urlparse(self.path)
 
         if parse.path == '/login':
@@ -42,7 +49,6 @@ class MyHandler(BaseHTTPRequestHandler):
 
             else:
                 response = {'code': 60204, 'message': 'Account and password are incorrect.'}
-
 
         elif parse.path == '/logout':
             response = {'code': 20000, 'data': 'success'}
@@ -63,11 +69,13 @@ class MyHandler(BaseHTTPRequestHandler):
                 response = {'code': 50008, 'message': 'Login failed, unable to get user details.'}
 
         elif parse.path == '/list':
+
             datas = [[], []]
             index = 0
             # 使用ThreadPoolExecutor并发地执行fetch_data函数  
             with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:  # 你可以根据需要调整max_workers的值  
-                future_to_url = {executor.submit(fetch_data, url): url for url in urls}  
+                future_to_url = {executor.submit(fetch_data, url): url for url in urls}
+                print("=====server: main stamp:%s future:%s" % (stamp, future_to_url))
                 for future in concurrent.futures.as_completed(future_to_url):  
                     url = future_to_url[future]  
                     try:  
@@ -79,15 +87,31 @@ class MyHandler(BaseHTTPRequestHandler):
                     except Exception as exc:  
                         print(f'Generated an exception for {url}: {exc}')
             response = {'code': 20000, 'data1': datas[0], 'data2': datas[1]}
+
+        elif parse.path == '/config':
+            config = {
+                'period':
+                {
+                    'mode': 2,
+                    'group': 0
+                },
+                'pivots':
+                [
+                    {'count': 2, 'limit': 3},
+                    {'count': 2, 'limit': 3},
+                    {'count': 2, 'limit': 3}
+                ]
+            }
+            response = {'code': 20000, 'data': config}
         
         else:
+            print("=====server: main stamp:%s path:%s?%s" % (stamp, parse.path, parse.query))
+
             url1 = 'https://5fb3-115-239-222-10.ngrok-free.app%s?%s' % (parse.path, parse.query)
-            print('=====%s=====' % url1)
             get1 = Process(target=requests_get, args=(url1,))
             get1.start()
 
             url2 = 'http://localhost:8123%s?%s' % (parse.path, parse.query)
-            print('=====%s=====' % url2)
             get2 = Process(target=requests_get, args=(url2,))
             get2.start()
 
@@ -106,6 +130,7 @@ class MyServer(ThreadingHTTPServer):
         super().__init__(('0.0.0.0', 8124), MyHandler)
 
 if __name__ == '__main__':
+    logging.getLogger("requests").setLevel(logging.DEBUG)
     server = MyServer()
     print('Starting server')
     server.serve_forever()
