@@ -42,15 +42,15 @@
       </el-table-column>
       <el-table-column label="设置" align="center" width="200">
         <template slot-scope="scope">
-          买开：<el-switch v-model="scope.row.buy" @change="set(scope.$index)"/>
-          卖开：<el-switch v-model="scope.row.short" @change="set(scope.$index)"/>
+          买开：<el-switch v-model="scope.row.buy" @change="set(scope.$index, list1)"/>
+          卖开：<el-switch v-model="scope.row.short" @change="set(scope.$index, list1)"/>
         </template>
       </el-table-column>
     </el-table>
 
     <br/>
 
-    <el-table v-loading="listLoading" :data="list2" element-loading-text="Loading" border fit highlight-current-row>
+    <el-table v-loading="listLoading" v-if="list2.length>0" :data="list2" element-loading-text="Loading" border fit highlight-current-row>
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
@@ -91,8 +91,8 @@
       </el-table-column>
       <el-table-column label="设置" align="center" width="200">
         <template slot-scope="scope">
-          买开：<el-switch v-model="scope.row.buy" @change="set(scope.$index)"/>
-          卖开：<el-switch v-model="scope.row.short" @change="set(scope.$index)"/>
+          买开：<el-switch v-model="scope.row.buy" @change="set(scope.$index, list2)"/>
+          卖开：<el-switch v-model="scope.row.short" @change="set(scope.$index, list2)"/>
         </template>
       </el-table-column>
     </el-table>
@@ -135,14 +135,10 @@ export default {
     sell(port) {
       operate(port, 4, 9999, 99, 0)
     },
-    set(index) {
-      if(index < this.list1.length)
+    set(index, list) {
+      if(index < list.length)
       {
-        setting(this.list1[index].port, this.list1[index].buy ? 1 : 0, this.list1[index].short ? 1 : 0)
-      }
-      if(index < this.list2.length)
-      {
-        setting(this.list2[index].port, this.list2[index].buy ? 1 : 0, this.list2[index].short ? 1 : 0)
+        setting(list[index].port, list[index].buy ? 1 : 0, list[index].short ? 1 : 0)
       }
     }
   }

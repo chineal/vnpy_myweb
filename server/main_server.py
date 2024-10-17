@@ -7,7 +7,7 @@ import concurrent.futures
 
 def requests_get(url):
     try:
-        list = requests.get(url)
+        requests.get(url)
     except Exception as e:
         pass
 
@@ -81,12 +81,12 @@ class MyHandler(BaseHTTPRequestHandler):
             response = {'code': 20000, 'data1': datas[0], 'data2': datas[1]}
         
         else:
-            url1='https://5fb3-115-239-222-10.ngrok-free.app%s?%s' % (parse.path, parse.query)
+            url1 = 'https://5fb3-115-239-222-10.ngrok-free.app%s?%s' % (parse.path, parse.query)
             print('=====%s=====' % url1)
             get1 = Process(target=requests_get, args=(url1,))
             get1.start()
 
-            url2='http://localhost:8123%s?%s' % (parse.path, parse.query)
+            url2 = 'http://localhost:8123%s?%s' % (parse.path, parse.query)
             print('=====%s=====' % url2)
             get2 = Process(target=requests_get, args=(url2,))
             get2.start()

@@ -12,40 +12,52 @@ def requests_get(url):
         pass
 
 class MyHandler(BaseHTTPRequestHandler):
+    posts = [8125, 8126, 8127, 8128]
+    block = {'buy': [], 'short': []}
+    
+    def list_requests(self, response, post, code):
+        url = 'http://localhost:%d/index' % MyHandler.posts[post]
+        state = {
+            'code': code, 'post': post + 1, 
+            'buy': False if str(MyHandler.posts[post]) in MyHandler.block['buy'] else True,
+            'short': False if str(MyHandler.posts[post]) in MyHandler.block['short'] else True
+        }
+        try:
+            data1 = requests.get(url, timeout=1)
+            if 200 == data1.status_code:
+                response.append(dict(ChainMap(state, json.loads(data1.text))))
+        except Exception as e:
+            pass
+
     def do_GET(self):
         parse = urlparse(self.path)
 
         if parse.path == '/list':
             response = []
+            self.list_requests(response, 0, 'if')
+            self.list_requests(response, 1, 'ih')
+            self.list_requests(response, 2, 'ic')
+            self.list_requests(response, 3, 'im')
 
-            try:
-                data1 = requests.get(url='http://localhost:8125/index', timeout=1)
-                if 200 == data1.status_code:
-                    response.append(dict(ChainMap({'code': 'if', 'post': 1}, json.loads(data1.text))))
-            except Exception as e:
-                pass
+        elif parse.path == '/setting':
+            query = parse_qs(parse.query)
+            port = query.get('port', [''])[0]
+            buy = query.get('buy', [''])[0]
+            short = query.get('short', [''])[0]
+            if '0' != buy and port in MyHandler.block['buy']:
+                MyHandler.block['buy'].remove(port)
+                print('port:%s buy is unblocked' % port)
+            if '0' == buy and port not in MyHandler.block['buy']:
+                MyHandler.block['buy'].append(port)
+                print('port:%s buy is blocked' % port)
+            if '0' != short and port in MyHandler.block['short']:
+                MyHandler.block['short'].remove(port)
+                print('port:%s short is unblocked' % port)
+            if '0' == short and port not in MyHandler.block['short']:
+                MyHandler.block['short'].append(port)
+                print('port:%s short is blocked' % port)
+            response = {'port': port, 'buy': buy, 'short': short}
 
-            try:
-                data2 = requests.get(url='http://localhost:8126/index', timeout=1)
-                if 200 == data2.status_code:
-                    response.append(dict(ChainMap({'code': 'ih', 'post': 2}, json.loads(data2.text))))
-            except Exception as e:
-                pass
-
-            try:
-                data3 = requests.get(url='http://localhost:8127/index', timeout=1)
-                if 200 == data3.status_code:
-                    response.append(dict(ChainMap({'code': 'ic', 'post': 3}, json.loads(data3.text))))
-            except Exception as e:
-                pass
-
-            try:
-                data4 = requests.get(url='http://localhost:8128/index', timeout=1)
-                if 200 == data4.status_code:
-                    response.append(dict(ChainMap({'code': 'im', 'post': 4}, json.loads(data4.text))))
-            except Exception as e:
-                pass
-        
         elif parse.path == '/vnpy':
             query = parse_qs(parse.query)
             port = query.get('port', [''])[0]
@@ -53,21 +65,32 @@ class MyHandler(BaseHTTPRequestHandler):
             sign = query.get('sign', [''])[0]
             key = query.get('key', [''])[0]
             stamp = query.get('stamp', [''])[0]
+            if '1' == key and port in MyHandler.block['buy']:
+                print('port:%s buy is blocking' % port)
+                return
+            
+            if '2' == key and port in MyHandler.block['short']:
+                print('port:%s short is blocking' % port)
+                return
+            
             url = 'http://localhost:%s/vnpy?flag=%s&sign=%s&key=%s&stamp=%s' % (port, flag, sign, key, stamp)
             request = Process(target=requests_get, args=(url,))
             request.start()
             response = {'port': port, 'flag': flag, 'sign': sign, 'key': key, 'stamp': stamp}
-            
-        elif parse.path == '/setting':
-            query = parse_qs(parse.query)
-            port = query.get('port', [''])[0]
-            buy = query.get('buy', [''])[0]
-            short = query.get('short', [''])[0]
-            try:
-                requests.get(url='http://localhost:%s/setting?buy=%s&short=%s' % (port, buy, short), timeout=1)
-            except Exception as e:
-                pass
-            response = {'port': port, 'flag': flag, 'sign': sign, 'key': key, 'stamp': stamp}
+
+        else:
+            params = parse.query.split('&')
+            for param in params:
+                if 'port=' in param:
+                    port = param[5:]
+                    params.remove(param)
+                    break
+            query = '&'.join(params)
+            url='http://localhost:%s%s?%s' % (port, parse.path, query)
+            print('=====%s=====' % url)
+            request = Process(target=requests_get, args=(url,))
+            request.start()
+            response = {'port': port, 'path': parse.path, 'query': query}
 
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
