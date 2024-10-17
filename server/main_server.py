@@ -102,7 +102,7 @@ class MyHandler(BaseHTTPRequestHandler):
                     {'count': 2, 'limit': 3}
                 ]
             }
-            response = {'code': 20000, 'data': config}
+            response = {'code': 20000, 'data': [config, config]}
         
         else:
             print("=====server: main stamp:%s path:%s?%s" % (stamp, parse.path, parse.query))
