@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import logging
 from multiprocessing import Process
@@ -7,23 +8,21 @@ import json
 import requests
 import concurrent.futures
 
-def requests_get(url):
+def requests_get(url, token):
+    headers = {"Authorization": token}
     try:
-        requests.get(url)
+        requests.get(url, headers=headers)
     except Exception as e:
         pass
 
 # 假设我们有一个URL列表  
-urls = [  
-    #'https://5fb3-115-239-222-10.ngrok-free.app/list',
-    'http://localhost:8123/list'
-    # ... 添加更多URL  
-]  
+urls = []  # ... 添加更多URL
   
 # 定义一个函数，该函数接收一个URL，发送GET请求，并打印响应内容  
-def fetch_data(url):  
-    try:  
-        response = requests.get(url)  
+def fetch_data(url, token):
+    headers = {"Authorization": token}
+    try:
+        response = requests.get(url, headers=headers)  
         response.raise_for_status()  # 如果请求失败（例如，4xx、5xx），则抛出HTTPError异常
         print(f"URL: {url}, Status Code: {response.status_code}, Content: {response.text[:100]}...")
         return json.loads(response.text)
@@ -67,14 +66,17 @@ class MyHandler(BaseHTTPRequestHandler):
 
             else:
                 response = {'code': 50008, 'message': 'Login failed, unable to get user details.'}
+        
+        elif parse.path == '/load':
+            self.server.load()
+            response = {'message': 'loaded new config'}
 
         elif parse.path == '/list':
-
             datas = [[], []]
             index = 0
             # 使用ThreadPoolExecutor并发地执行fetch_data函数  
             with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:  # 你可以根据需要调整max_workers的值  
-                future_to_url = {executor.submit(fetch_data, url): url for url in urls}
+                future_to_url = {executor.submit(fetch_data, '%s/list' % url, self.server.token): url for url in urls}
                 print("=====server: main stamp:%s future:%s" % (stamp, future_to_url))
                 for future in concurrent.futures.as_completed(future_to_url):  
                     url = future_to_url[future]  
@@ -106,15 +108,11 @@ class MyHandler(BaseHTTPRequestHandler):
         
         else:
             print("=====server: main stamp:%s path:%s?%s" % (stamp, parse.path, parse.query))
-
-            url1 = 'https://5fb3-115-239-222-10.ngrok-free.app%s?%s' % (parse.path, parse.query)
-            get1 = Process(target=requests_get, args=(url1,))
-            get1.start()
-
-            url2 = 'http://localhost:8123%s?%s' % (parse.path, parse.query)
-            get2 = Process(target=requests_get, args=(url2,))
-            get2.start()
-
+            for url in urls:
+                arg = '%s%s?%s' % (url, parse.path, parse.query)
+                print("=====server: main url:%s" % arg)
+                get = Process(target=requests_get, args=(arg, self.server.token,))
+                get.start()
             response = {'code': 20000, 'data': 'ok'}
 
         self.send_response(200)
@@ -123,11 +121,44 @@ class MyHandler(BaseHTTPRequestHandler):
 
         response_json = json.dumps(response)
         self.wfile.write(response_json.encode('utf-8'))
+    
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        body = self.rfile.read(content_length)
+        data = json.loads(body.decode('utf-8'))
+        
+        if data.get('action') == 'config':
+            print('content:%s' % data.get('content'))
+            response = {'code': 20000, 'data': 'ok'}
+            
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        
+        response_json = json.dumps(response)
+        self.wfile.write(response_json.encode('utf-8'))
 
 class MyServer(ThreadingHTTPServer):
+    token: str|None = None
+
     def __init__(self):
         self.timeout = 1
         super().__init__(('0.0.0.0', 8124), MyHandler)
+        self.load()
+        
+    def load(self):
+        global urls
+
+        with open('config.json') as f:
+            config = json.load(f)
+
+            md5_password = hashlib.md5()
+            md5_password.update(config['password'].encode('utf-8'))
+            self.token = md5_password.hexdigest()
+
+            urls.clear()
+            for server in config['servers']:
+                urls.append('%s' % server)
 
 if __name__ == '__main__':
     logging.getLogger("requests").setLevel(logging.DEBUG)

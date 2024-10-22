@@ -4,6 +4,9 @@ from urllib.parse import parse_qs, urlparse
 from collections import ChainMap
 import json
 import requests
+import hashlib
+
+token: str|None = None
 
 def requests_get(url):
     try:
@@ -30,9 +33,23 @@ class MyHandler(BaseHTTPRequestHandler):
             pass
 
     def do_GET(self):
+        global token
         parse = urlparse(self.path)
+        print('parse.path:%s' % parse.path)
+        
+        if parse.path == '/load':
+            self.server.load()
+            print('success: loaded new config')
+            response = {'message': 'loaded new config'}
 
-        if parse.path == '/list':
+        elif token != self.headers.get('Authorization'):
+            print('error: token check failed')
+            print('error: recv token:%s' % self.headers.get('Authorization'))
+            print('error: self token:%s' % token)
+            response = {'error': 'token check failed'}
+            
+        elif parse.path == '/list':
+            print('info: get strategy list')
             response = []
             self.list_requests(response, 0, 'if')
             self.list_requests(response, 1, 'ih')
@@ -44,18 +61,26 @@ class MyHandler(BaseHTTPRequestHandler):
             port = query.get('port', [''])[0]
             buy = query.get('buy', [''])[0]
             short = query.get('short', [''])[0]
-            if '0' != buy and port in MyHandler.block['buy']:
-                MyHandler.block['buy'].remove(port)
-                print('port:%s buy is unblocked' % port)
-            if '0' == buy and port not in MyHandler.block['buy']:
+
+            print('buy setting:%s', buy)
+            print('short setting:%s', short)
+            print('buy blocks:%s' % MyHandler.block['buy'])
+            print('short blocks:%s' % MyHandler.block['short'])
+
+            if 0 == int(buy) and port not in MyHandler.block['buy']:
                 MyHandler.block['buy'].append(port)
                 print('port:%s buy is blocked' % port)
-            if '0' != short and port in MyHandler.block['short']:
-                MyHandler.block['short'].remove(port)
-                print('port:%s short is unblocked' % port)
-            if '0' == short and port not in MyHandler.block['short']:
+            if 0 != int(buy) and port in MyHandler.block['buy']:
+                MyHandler.block['buy'].remove(port)
+                print('port:%s buy is unblocked' % port)
+
+            if 0 == int(short) and port not in MyHandler.block['short']:
                 MyHandler.block['short'].append(port)
                 print('port:%s short is blocked' % port)
+            if 0 != int(short) and port in MyHandler.block['short']:
+                MyHandler.block['short'].remove(port)
+                print('port:%s short is unblocked' % port)
+            
             response = {'port': port, 'buy': buy, 'short': short}
 
         elif parse.path == '/vnpy':
@@ -103,6 +128,17 @@ class MyServer(ThreadingHTTPServer):
     def __init__(self):
         self.timeout = 1
         super().__init__(('0.0.0.0', 8123), MyHandler)
+        self.load()
+
+    def load(self):
+        global token
+        with open('config.json') as f:
+            config = json.load(f)
+            print("config:", config)
+
+            md5_password = hashlib.md5()
+            md5_password.update(config['password'].encode('utf-8'))
+            token = md5_password.hexdigest()
 
 if __name__ == '__main__':
     server = MyServer()
