@@ -22,3 +22,10 @@ export function setting(port, buy, short) {
     params: { 'port': port, 'buy': buy, 'short': short }
   })
 }
+
+export function load() {
+  return request({
+    url: 'load',
+    method: 'get'
+  })
+}

@@ -5,8 +5,16 @@ from collections import ChainMap
 import json
 import requests
 import hashlib
+import concurrent.futures
 
 token: str|None = None
+
+posts = [
+    {'post': 0, 'code': 'if'},
+    {'post': 1, 'code': 'ih'},
+    {'post': 2, 'code': 'ic'},
+    {'post': 3, 'code': 'im'}
+]
 
 def requests_get(url):
     try:
@@ -51,10 +59,14 @@ class MyHandler(BaseHTTPRequestHandler):
         elif parse.path == '/list':
             print('info: get strategy list')
             response = []
-            self.list_requests(response, 0, 'if')
-            self.list_requests(response, 1, 'ih')
-            self.list_requests(response, 2, 'ic')
-            self.list_requests(response, 3, 'im')
+            with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+                future_to_url = {executor.submit(self.list_requests, response, post['post'], post['code']): post for post in posts}
+                for future in concurrent.futures.as_completed(future_to_url):  
+                    url = future_to_url[future]  
+                    try:
+                        future.result()
+                    except Exception as exc:  
+                        print(f'Generated an exception for {url}: {exc}')
 
         elif parse.path == '/setting':
             query = parse_qs(parse.query)
@@ -134,7 +146,6 @@ class MyServer(ThreadingHTTPServer):
         global token
         with open('config.json') as f:
             config = json.load(f)
-            print("config:", config)
 
             md5_password = hashlib.md5()
             md5_password.update(config['password'].encode('utf-8'))

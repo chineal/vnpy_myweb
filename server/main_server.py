@@ -72,8 +72,7 @@ class MyHandler(BaseHTTPRequestHandler):
             response = {'message': 'loaded new config'}
 
         elif parse.path == '/list':
-            datas = [[], []]
-            index = 0
+            datas = []
             # 使用ThreadPoolExecutor并发地执行fetch_data函数  
             with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:  # 你可以根据需要调整max_workers的值  
                 future_to_url = {executor.submit(fetch_data, '%s/list' % url, self.server.token): url for url in urls}
@@ -83,12 +82,14 @@ class MyHandler(BaseHTTPRequestHandler):
                     try:  
                         # 通过调用future.result()来获取函数的返回值，这会阻塞，直到结果可用  
                         # 但是请注意，这里我们只是打印结果，没有返回值，所以调用future.result()只是为了等待函数完成  
-                        datas[index] = future.result()
-                        print("index:%d data:%s" % (index, datas[index]))
-                        index += 1
+                        datas.append(future.result())
                     except Exception as exc:  
                         print(f'Generated an exception for {url}: {exc}')
-            response = {'code': 20000, 'data1': datas[0], 'data2': datas[1]}
+            
+            servers = []
+            for url in urls:
+                servers.append({'url': url, "data": datas.pop()})
+            response = {'code': 20000, 'servers': servers}
 
         elif parse.path == '/config':
             config = {
@@ -107,12 +108,26 @@ class MyHandler(BaseHTTPRequestHandler):
             response = {'code': 20000, 'data': config}
         
         else:
-            print("=====server: main stamp:%s path:%s?%s" % (stamp, parse.path, parse.query))
-            for url in urls:
-                arg = '%s%s?%s' % (url, parse.path, parse.query)
+            index: int|None = None
+            params = parse.query.split('&')
+            for param in params:
+                if 'index=' in param:
+                    index = int(param[6:])
+                    params.remove(param)
+                    break
+            query = '&'.join(params)
+            print("=====server: main stamp:%s path:%s?%s" % (stamp, parse.path, query))
+            if index is not None and len(urls) > index and 0 <= index:
+                arg = '%s%s?%s' % (url[index], parse.path, query)
                 print("=====server: main url:%s" % arg)
                 get = Process(target=requests_get, args=(arg, self.server.token,))
                 get.start()
+            else:
+                for url in urls:
+                    arg = '%s%s?%s' % (url, parse.path, query)
+                    print("=====server: main url:%s" % arg)
+                    get = Process(target=requests_get, args=(arg, self.server.token,))
+                    get.start()
             response = {'code': 20000, 'data': 'ok'}
 
         self.send_response(200)
