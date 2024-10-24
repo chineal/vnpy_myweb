@@ -30,6 +30,22 @@ def fetch_data(url, token):
         print(f"Error fetching {url}: {e}")  
 
 class MyHandler(BaseHTTPRequestHandler):
+    data = {
+        'period':
+        {
+            'mode': 2,
+            'group': 0
+        },
+        'pivots':
+        [
+            {'count': 2, 'limit': 3},
+            {'count': 2, 'limit': 3},
+            {'count': 2, 'limit': 3}
+        ]
+    }
+    datas = [data, data, data]
+    config = { '8125': datas, '8126': datas, '8127': datas, '8128': datas }
+
     def log_message(self, format, *args):
         pass
 
@@ -92,20 +108,10 @@ class MyHandler(BaseHTTPRequestHandler):
             response = {'code': 20000, 'servers': servers}
 
         elif parse.path == '/config':
-            config = {
-                'period':
-                {
-                    'mode': 2,
-                    'group': 0
-                },
-                'pivots':
-                [
-                    {'count': 2, 'limit': 3},
-                    {'count': 2, 'limit': 3},
-                    {'count': 2, 'limit': 3}
-                ]
-            }
-            response = {'code': 20000, 'data': config}
+            query = parse_qs(parse.query)
+            port = query.get('port', [''])[0]
+            print("=====server: main stamp:%s get config port:%s" % (stamp, port))
+            response = {'code': 20000, 'data': MyHandler.config[port]}
         
         else:
             index: int|None = None
@@ -143,7 +149,9 @@ class MyHandler(BaseHTTPRequestHandler):
         data = json.loads(body.decode('utf-8'))
         
         if data.get('action') == 'config':
-            print('content:%s' % data.get('content'))
+            port = data.get('port')
+            print('set config port:%s' % port)
+            MyHandler.config[port] = data.get('content')
             response = {'code': 20000, 'data': 'ok'}
             
         self.send_response(200)

@@ -29,3 +29,19 @@ export function load() {
     method: 'get'
   })
 }
+
+export function config(port) {
+  return request({
+    url: 'config',
+    method: 'get',
+    params: { 'port': port }
+  })
+}
+
+export function action(data) {
+  return request({
+    url: "api",
+    method: 'post',
+    data
+  })
+}

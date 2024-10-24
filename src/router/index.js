@@ -60,13 +60,26 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/vnpy/page',
     name: 'VNPY',
-    meta: { title: '账号管理', icon: 'el-icon-money' },
+    meta: { title: '量化设置', icon: 'el-icon-money' },
     children: [
       {
         path: 'page',
         name: 'VNPYpage',
         component: () => import('@/views/vnpy/index'),
         meta: { title: '交易接口', icon: 'tree' }
+      },
+      {
+        path: 'period',
+        name: 'PeriodConfig',
+        component: () => import('@/views/vnpy/period'),
+        meta: { title: '策略配置', icon: 'tree' }
+      },
+      {
+        path: 'edit/:port/:flag',
+        name: 'ConfigEditer',
+        component: () => import('@/views/vnpy/config'),
+        meta: { title: '配置编辑' },
+        hidden: true
       }
     ]
   },

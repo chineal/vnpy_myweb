@@ -48,8 +48,8 @@
         </el-table-column>
         <el-table-column label="设置" align="center" width="200">
           <template slot-scope="scope">
-            买开：<el-switch v-model="scope.row.buy" @change="set(scope.$index, list1)"/>
-            卖开：<el-switch v-model="scope.row.short" @change="set(scope.$index, list1)"/>
+            买开：<el-switch v-model="scope.row.buy" @change="set(scope.$index, server.data)"/>
+            卖开：<el-switch v-model="scope.row.short" @change="set(scope.$index, server.data)"/>
           </template>
         </el-table-column>
       </el-table>
