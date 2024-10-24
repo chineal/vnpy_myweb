@@ -82,6 +82,7 @@ export default {
       this.datas[this.flag-1] = this.form
       action({'action': 'config', 'port': this.port, 'content': this.datas}).then(response => {
         this.loading = false
+        this.$message.success('成功')
       })
     }
   },
