@@ -3,5 +3,159 @@
     "servers": [
         "https://5fb3-115-239-222-10.ngrok-free.app",
         "http://192.168.0.22:8123"
+    ],
+    "setting": {
+        "8125": [
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            },
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            },
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            }
+        ],
+        "8126": [
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            },
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            },
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            }
+        ]
+    },
+    "8127": [
+        {
+            "period": {
+                "mode": 2,
+                "group": 0
+            },
+            "pivots": [
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3}
+            ]
+        },
+        {
+            "period": {
+                "mode": 2,
+                "group": 0
+            },
+            "pivots": [
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3}
+            ]
+        },
+        {
+            "period": {
+                "mode": 2,
+                "group": 0
+            },
+            "pivots": [
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3}
+            ]
+        }
+    ],
+    "8128": [
+        {
+            "period": {
+                "mode": 2,
+                "group": 0
+            },
+            "pivots": [
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3}
+            ]
+        },
+        {
+            "period": {
+                "mode": 2,
+                "group": 0
+            },
+            "pivots": [
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3}
+            ]
+        },
+        {
+            "period": {
+                "mode": 2,
+                "group": 0
+            },
+            "pivots": [
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3},
+                {"count": 2, "limit": 3}
+            ]
+        }
     ]
 }

@@ -11,7 +11,7 @@ import concurrent.futures
 def requests_get(url, token):
     headers = {"Authorization": token}
     try:
-        requests.get(url, headers=headers)
+        requests.get(url, headers=headers, timeout=30)
     except Exception as e:
         pass
 
@@ -30,21 +30,7 @@ def fetch_data(url, token):
         print(f"Error fetching {url}: {e}")  
 
 class MyHandler(BaseHTTPRequestHandler):
-    data = {
-        'period':
-        {
-            'mode': 2,
-            'group': 0
-        },
-        'pivots':
-        [
-            {'count': 2, 'limit': 3},
-            {'count': 2, 'limit': 3},
-            {'count': 2, 'limit': 3}
-        ]
-    }
-    datas = [data, data, data]
-    config = { '8125': datas, '8126': datas, '8127': datas, '8128': datas }
+    config = {}
 
     def log_message(self, format, *args):
         pass
@@ -110,7 +96,7 @@ class MyHandler(BaseHTTPRequestHandler):
         elif parse.path == '/config':
             query = parse_qs(parse.query)
             port = query.get('port', [''])[0]
-            print("=====server: main stamp:%s get config port:%s" % (stamp, port))
+            #print("=====server: main stamp:%s get config port:%s" % (stamp, port))
             response = {'code': 20000, 'data': MyHandler.config[port]}
         
         else:
@@ -152,6 +138,13 @@ class MyHandler(BaseHTTPRequestHandler):
             port = data.get('port')
             print('set config port:%s' % port)
             MyHandler.config[port] = data.get('content')
+
+            with open('config.json', 'r') as f:
+                config = json.load(f)
+                config['setting'] = MyHandler.config
+                with open('config.json','w',encoding='utf-8') as f:
+                    json.dump(config, f, ensure_ascii=False)
+            
             response = {'code': 20000, 'data': 'ok'}
             
         self.send_response(200)
@@ -172,7 +165,7 @@ class MyServer(ThreadingHTTPServer):
     def load(self):
         global urls
 
-        with open('config.json') as f:
+        with open('config.json', 'r') as f:
             config = json.load(f)
 
             md5_password = hashlib.md5()
@@ -182,6 +175,8 @@ class MyServer(ThreadingHTTPServer):
             urls.clear()
             for server in config['servers']:
                 urls.append('%s' % server)
+            
+            MyHandler.config = config['setting']
 
 if __name__ == '__main__':
     logging.getLogger("requests").setLevel(logging.DEBUG)
