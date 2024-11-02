@@ -97,7 +97,10 @@ class MyHandler(BaseHTTPRequestHandler):
             query = parse_qs(parse.query)
             port = query.get('port', [''])[0]
             #print("=====server: main stamp:%s get config port:%s" % (stamp, port))
-            response = {'code': 20000, 'data': MyHandler.config[port]}
+            if port in MyHandler.config:
+                response = {'code': 20000, 'data': MyHandler.config[port]}
+            else:
+                response = {'code': 20000, 'data': MyHandler.config['9999']}
         
         else:
             index: int|None = None

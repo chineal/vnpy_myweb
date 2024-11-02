@@ -24,17 +24,17 @@
         </el-col>
       </el-row>
       <el-row v-for="(pivot, index) in form.pivots">
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="分级中枢数量统计">
-            中枢等级{{ index + 1 }}：
+            {{ index == 0 ? "盘背" : "中枢等级"+index }}：
           </el-form-item>
         </el-col>
-        <el-col :span="10">
+        <el-col :span="9">
           <el-form-item label="中枢数量基本要求">
             <el-input type="number" v-model.number="pivot.count"/>
           </el-form-item>
         </el-col>
-        <el-col :span="10">
+        <el-col :span="9">
           <el-form-item label="直接开仓中枢数量">
             <el-input type="number" v-model.number="pivot.limit"/>
           </el-form-item>

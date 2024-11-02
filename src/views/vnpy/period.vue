@@ -48,7 +48,8 @@ export default {
         {post: 1, name: '沪深', code: 'if', port: 8125, min1: 1, min5: 2, min30: 3},
         {post: 2, name: '上证', code: 'ih', port: 8126, min1: 1, min5: 2, min30: 3},
         {post: 3, name: '中证', code: 'ic', port: 8127, min1: 1, min5: 2, min30: 3},
-        {post: 4, name: '中千', code: 'im', port: 8128, min1: 1, min5: 2, min30: 3}
+        {post: 4, name: '中千', code: 'im', port: 8128, min1: 1, min5: 2, min30: 3},
+        {post: 0, name: '测试', code: 'cs', port: 9999, min1: 1, min5: 2, min30: 3}
       ],
       loading: false
     }
