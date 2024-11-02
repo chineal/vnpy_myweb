@@ -92,7 +92,13 @@ class MyHandler(BaseHTTPRequestHandler):
             if 0 != int(short) and port in MyHandler.block['short']:
                 MyHandler.block['short'].remove(port)
                 print('port:%s short is unblocked' % port)
-            
+
+            with open('config.json', 'r') as f:
+                config = json.load(f)
+                config['block'] = MyHandler.block
+                with open('config.json','w',encoding='utf-8') as f:
+                    json.dump(config, f, ensure_ascii=False)
+
             response = {'port': port, 'buy': buy, 'short': short}
 
         elif parse.path == '/vnpy':
@@ -144,12 +150,14 @@ class MyServer(ThreadingHTTPServer):
 
     def load(self):
         global token
-        with open('config.json') as f:
+        with open('config.json', 'r') as f:
             config = json.load(f)
 
             md5_password = hashlib.md5()
             md5_password.update(config['password'].encode('utf-8'))
             token = md5_password.hexdigest()
+
+            MyHandler.block = config['block']
 
 if __name__ == '__main__':
     server = MyServer()

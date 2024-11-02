@@ -80,82 +80,83 @@
                     {"count": 2, "limit": 3}
                 ]
             }
+        ],
+        "8127": [
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            },
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            },
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            }
+        ],
+        "8128": [
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            },
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            },
+            {
+                "period": {
+                    "mode": 2,
+                    "group": 0
+                },
+                "pivots": [
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3},
+                    {"count": 2, "limit": 3}
+                ]
+            }
         ]
     },
-    "8127": [
-        {
-            "period": {
-                "mode": 2,
-                "group": 0
-            },
-            "pivots": [
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3}
-            ]
-        },
-        {
-            "period": {
-                "mode": 2,
-                "group": 0
-            },
-            "pivots": [
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3}
-            ]
-        },
-        {
-            "period": {
-                "mode": 2,
-                "group": 0
-            },
-            "pivots": [
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3}
-            ]
-        }
-    ],
-    "8128": [
-        {
-            "period": {
-                "mode": 2,
-                "group": 0
-            },
-            "pivots": [
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3}
-            ]
-        },
-        {
-            "period": {
-                "mode": 2,
-                "group": 0
-            },
-            "pivots": [
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3}
-            ]
-        },
-        {
-            "period": {
-                "mode": 2,
-                "group": 0
-            },
-            "pivots": [
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3},
-                {"count": 2, "limit": 3}
-            ]
-        }
-    ]
+    "block": {"buy": [], "short": []}
 }
