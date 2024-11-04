@@ -43,10 +43,18 @@
     </el-form>
     <div style="width: 100%; text-align: center;">
       <el-button-group>
-        <el-button type="primary" @click="save">保存</el-button>
+        <el-button type="primary" @click="confirm">保存</el-button>
         <el-button @click="$router.back()">取消</el-button>
       </el-button-group>
     </div>
+    <el-dialog :visible.sync="dialogVisible" title="确认保存" width="30%" @close="dialogVisible = false">  
+      <p>在下面的输入框中输入{{ code }}</p>  
+      <el-input type="number" v-model.number="recode"/>
+      <div slot="footer" class="dialog-footer">  
+        <el-button @click="dialogVisible = false">取 消</el-button>  
+        <el-button type="primary" @click="save">确 定</el-button>  
+      </div>  
+    </el-dialog> 
   </div>
 </template>
 
@@ -56,6 +64,9 @@ import {config, action} from '@/api/vnpy'
 export default {
   data() {
     return {
+      code: '',
+      recode: '',
+      dialogVisible: false,
       datas: [],
       form: {},
       port: '',
@@ -77,7 +88,17 @@ export default {
         this.form = this.datas[this.flag-1]
       })
     },
+    confirm() {
+      this.recode = '';
+      this.code = Math.floor(Math.random()*9000)+1000;
+      this.dialogVisible = true;
+    },
     save() {
+      this.dialogVisible = false;
+      if(this.code != this.recode){
+        this.$message.error('验证码错误')
+        return;
+      }
       this.loading = true
       this.datas[this.flag-1] = this.form
       action({'action': 'config', 'port': this.port, 'content': this.datas}).then(response => {
