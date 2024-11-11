@@ -1,8 +1,7 @@
 {
-    "password": "985@Qaz",
+    "token": "9GxcS4Cpam1q32vpKiZZ",
     "servers": [
-        "https://7f41-115-239-222-10.ngrok-free.app",
-        "http://192.168.0.22:8123"
+        "http://127.0.0.1:8123"
     ],
     "setting": {
         "8125": [
@@ -196,5 +195,6 @@
             }
         ]
     },
-    "block": {"buy": [], "short": []}
+    "block": {"buy": [], "short": []},
+    "worth": []
 }

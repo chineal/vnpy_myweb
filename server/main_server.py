@@ -1,5 +1,5 @@
 import datetime
-import hashlib
+#import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import logging
 from multiprocessing import Process
@@ -40,7 +40,13 @@ class MyHandler(BaseHTTPRequestHandler):
         stamp = now.strftime("%Y-%m-%d %H:%M:%S")
         parse = urlparse(self.path)
 
-        if parse.path == '/login':
+        if self.server.token != self.headers.get('Authorization'):
+            print('error: token check failed')
+            print('error: recv token:%s' % self.headers.get('Authorization'))
+            print('error: self token:%s' % token)
+            response = {'error': 'token check failed'}
+            
+        elif parse.path == '/login':
             query = parse_qs(parse.query)
             username = query.get('username', [''])[0]
             password = query.get('password', [''])[0]
@@ -170,11 +176,10 @@ class MyServer(ThreadingHTTPServer):
 
         with open('config.json', 'r') as f:
             config = json.load(f)
-
-            md5_password = hashlib.md5()
-            md5_password.update(config['password'].encode('utf-8'))
-            self.token = md5_password.hexdigest()
-
+            #md5_password = hashlib.md5()
+            #md5_password.update(config['password'].encode('utf-8'))
+            #self.token = md5_password.hexdigest()
+            self.token = config['token']
             urls.clear()
             for server in config['servers']:
                 urls.append('%s' % server)

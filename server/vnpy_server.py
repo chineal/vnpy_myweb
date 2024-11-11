@@ -4,7 +4,7 @@ from urllib.parse import parse_qs, urlparse
 from collections import ChainMap
 import json
 import requests
-import hashlib
+#import hashlib
 import concurrent.futures
 
 token: str|None = None
@@ -25,13 +25,15 @@ def requests_get(url):
 class MyHandler(BaseHTTPRequestHandler):
     posts = [8125, 8126, 8127, 8128]
     block = {'buy': [], 'short': []}
+    worth = []
     
     def list_requests(self, response, post, code):
         url = 'http://localhost:%d/index' % MyHandler.posts[post]
         state = {
             'code': code, 'post': post + 1, 
             'buy': False if str(MyHandler.posts[post]) in MyHandler.block['buy'] else True,
-            'short': False if str(MyHandler.posts[post]) in MyHandler.block['short'] else True
+            'short': False if str(MyHandler.posts[post]) in MyHandler.block['short'] else True,
+            'worth': True if str(MyHandler.posts[post]) in MyHandler.worth else False
         }
         try:
             data1 = requests.get(url, timeout=1)
@@ -73,11 +75,7 @@ class MyHandler(BaseHTTPRequestHandler):
             port = query.get('port', [''])[0]
             buy = query.get('buy', [''])[0]
             short = query.get('short', [''])[0]
-
-            print('buy setting:%s', buy)
-            print('short setting:%s', short)
-            print('buy blocks:%s' % MyHandler.block['buy'])
-            print('short blocks:%s' % MyHandler.block['short'])
+            worth = query.get('worth', [''])[0]
 
             if 0 == int(buy) and port not in MyHandler.block['buy']:
                 MyHandler.block['buy'].append(port)
@@ -93,9 +91,17 @@ class MyHandler(BaseHTTPRequestHandler):
                 MyHandler.block['short'].remove(port)
                 print('port:%s short is unblocked' % port)
 
+            if 0 != int(worth) and port not in MyHandler.worth:
+                MyHandler.worth.append(port)
+                print('port:%s worth is on' % port)
+            if 0 == int(worth) and port in MyHandler.worth:
+                MyHandler.worth.remove(port)
+                print('port:%s worth is off' % port)
+
             with open('config.json', 'r') as f:
                 config = json.load(f)
                 config['block'] = MyHandler.block
+                config['worth'] = MyHandler.worth
                 with open('config.json','w',encoding='utf-8') as f:
                     json.dump(config, f, ensure_ascii=False)
 
@@ -116,7 +122,12 @@ class MyHandler(BaseHTTPRequestHandler):
                 print('port:%s short is blocking' % port)
                 return
             
-            url = 'http://localhost:%s/vnpy?flag=%s&sign=%s&key=%s&stamp=%s' % (port, flag, sign, key, stamp)
+            if 3 <= int(key) and port in MyHandler.worth:
+                mark = '1'
+            else:
+                mark = '0'
+            
+            url = 'http://localhost:%s/vnpy?flag=%s&sign=%s&mark=%s&key=%s&stamp=%s' % (port, flag, sign, mark, key, stamp)
             request = Process(target=requests_get, args=(url,))
             request.start()
             response = {'port': port, 'flag': flag, 'sign': sign, 'key': key, 'stamp': stamp}
@@ -152,12 +163,12 @@ class MyServer(ThreadingHTTPServer):
         global token
         with open('config.json', 'r') as f:
             config = json.load(f)
-
-            md5_password = hashlib.md5()
-            md5_password.update(config['password'].encode('utf-8'))
-            token = md5_password.hexdigest()
-
+            #md5_password = hashlib.md5()
+            #md5_password.update(config['password'].encode('utf-8'))
+            #token = md5_password.hexdigest()
+            token = config['token']
             MyHandler.block = config['block']
+            MyHandler.worth = config['worth']
 
 if __name__ == '__main__':
     server = MyServer()
