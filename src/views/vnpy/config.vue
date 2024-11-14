@@ -8,7 +8,7 @@
         <el-col :span="4">
           <el-form-item label="周期">{{ flag | period }}</el-form-item>
         </el-col>
-        <el-col :span="9">
+        <el-col :span="6">
           <el-form-item label="模式">
             <el-select v-model="form.period.mode" placeholder="请选择">
               <el-option :key=1 :value=1 label="笔止盈"/>
@@ -17,9 +17,14 @@
             </el-select> 
           </el-form-item>
         </el-col>
-        <el-col :span="9">
+        <el-col :span="6">
           <el-form-item label="中枢合并">
             <el-switch v-model="form.period.group" :active-value=1 :inactive-value=0 />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="被动止损">
+            <el-switch v-model="form.period.loss" :active-value=1 :inactive-value=0 />
           </el-form-item>
         </el-col>
       </el-row>

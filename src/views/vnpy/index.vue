@@ -46,8 +46,10 @@
             <el-button type="warning" size="small" @click="sell(scope.row.port)">卖平</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="设置" align="center" width="300">
+        <el-table-column label="设置" align="center" width="500">
           <template slot-scope="scope">
+            结构：<el-switch v-model="scope.row.chan" @change="set(scope.$index, server.data)"/>
+            共振：<el-switch v-model="scope.row.skdj" @change="set(scope.$index, server.data)"/>
             买开：<el-switch v-model="scope.row.buy" @change="set(scope.$index, server.data)"/>
             卖开：<el-switch v-model="scope.row.short" @change="set(scope.$index, server.data)"/>
             比价：<el-switch v-model="scope.row.worth" @change="set(scope.$index, server.data)"/>
@@ -97,6 +99,8 @@ export default {
       if(index < list.length)
       {
         setting(list[index].port,
+          list[index].chan ? 1 : 0,
+          list[index].skdj ? 1 : 0,
           list[index].buy ? 1 : 0,
           list[index].short ? 1 : 0,
           list[index].worth ? 1 : 0)

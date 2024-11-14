@@ -15,11 +15,11 @@ export function operate(port, key, flag, sign, stamp) {
   })
 }
 
-export function setting(port, buy, short, worth) {
+export function setting(port, chan, skdj, buy, short, worth) {
   return request({
     url: 'setting',
     method: 'get',
-    params: { 'port': port, 'buy': buy, 'short': short, 'worth': worth}
+    params: { 'chan': chan, 'skdj': skdj, 'port': port, 'buy': buy, 'short': short, 'worth': worth}
   })
 }
 

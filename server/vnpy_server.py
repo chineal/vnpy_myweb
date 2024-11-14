@@ -24,13 +24,15 @@ def requests_get(url):
 
 class MyHandler(BaseHTTPRequestHandler):
     posts = [8125, 8126, 8127, 8128]
-    block = {'buy': [], 'short': []}
+    block = {'chan': [], 'skdj': [], 'buy': [], 'short': []}
     worth = []
     
     def list_requests(self, response, post, code):
         url = 'http://localhost:%d/index' % MyHandler.posts[post]
         state = {
             'code': code, 'post': post + 1, 
+            'chan': False if str(MyHandler.posts[post]) in MyHandler.block['chan'] else True,
+            'skdj': False if str(MyHandler.posts[post]) in MyHandler.block['skdj'] else True,
             'buy': False if str(MyHandler.posts[post]) in MyHandler.block['buy'] else True,
             'short': False if str(MyHandler.posts[post]) in MyHandler.block['short'] else True,
             'worth': True if str(MyHandler.posts[post]) in MyHandler.worth else False
@@ -41,6 +43,14 @@ class MyHandler(BaseHTTPRequestHandler):
                 response.append(dict(ChainMap(state, json.loads(data1.text))))
         except Exception as e:
             pass
+
+    def do_block(self, port, flag, name):
+        if 0 == int(flag) and port not in MyHandler.block[name]:
+            MyHandler.block[name].append(port)
+            print('port:%s %s is blocked' % (port, name))
+        if 0 != int(flag) and port in MyHandler.block[name]:
+            MyHandler.block[name].remove(port)
+            print('port:%s %s is unblocked' % (port, name))
 
     def do_GET(self):
         global token
@@ -75,21 +85,14 @@ class MyHandler(BaseHTTPRequestHandler):
             port = query.get('port', [''])[0]
             buy = query.get('buy', [''])[0]
             short = query.get('short', [''])[0]
+            chan = query.get('chan', [''])[0]
+            skdj = query.get('skdj', [''])[0]
             worth = query.get('worth', [''])[0]
 
-            if 0 == int(buy) and port not in MyHandler.block['buy']:
-                MyHandler.block['buy'].append(port)
-                print('port:%s buy is blocked' % port)
-            if 0 != int(buy) and port in MyHandler.block['buy']:
-                MyHandler.block['buy'].remove(port)
-                print('port:%s buy is unblocked' % port)
-
-            if 0 == int(short) and port not in MyHandler.block['short']:
-                MyHandler.block['short'].append(port)
-                print('port:%s short is blocked' % port)
-            if 0 != int(short) and port in MyHandler.block['short']:
-                MyHandler.block['short'].remove(port)
-                print('port:%s short is unblocked' % port)
+            self.do_block(port, chan, 'chan')
+            self.do_block(port, skdj, 'skdj')
+            self.do_block(port, buy, 'buy')
+            self.do_block(port, short, 'short')
 
             if 0 != int(worth) and port not in MyHandler.worth:
                 MyHandler.worth.append(port)
@@ -114,6 +117,15 @@ class MyHandler(BaseHTTPRequestHandler):
             sign = query.get('sign', [''])[0]
             key = query.get('key', [''])[0]
             stamp = query.get('stamp', [''])[0]
+
+            if '1' == flag[:1] and len(flag) == 4 and port in MyHandler.block['chan']:
+                print('port:%s chan is blocking' % port)
+                return
+            
+            if '2' == flag[:1] and len(flag) == 4 and port in MyHandler.block['skdj']:
+                print('port:%s skdj is blocking' % port)
+                return
+            
             if '1' == key and port in MyHandler.block['buy']:
                 print('port:%s buy is blocking' % port)
                 return
