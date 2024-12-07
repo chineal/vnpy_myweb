@@ -7,6 +7,13 @@ export function list() {
   })
 }
 
+export function info() {
+  return request({
+    url: 'stategy',
+    method: 'get'
+  })
+}
+
 export function operate(port, key, flag, sign, stamp) {
   return request({
     url: 'vnpy',

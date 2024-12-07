@@ -7,25 +7,6 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 /**
- * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
- *
- * hidden: true                   if set true, item will not show in the sidebar(default is false)
- * alwaysShow: true               if set true, will always show the root menu
- *                                if not set alwaysShow, when item has more than one children route,
- *                                it will becomes nested mode, otherwise not show the root menu
- * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
- * meta : {
-    roles: ['admin','editor']    control the page roles (you can set multiple roles)
-    title: 'title'               the name show in sidebar and breadcrumb (recommend set)
-    icon: 'svg-name'/'el-icon-x' the icon show in the sidebar
-    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
-  }
- */
-
-/**
  * constantRoutes
  * a base page that does not have permission requirements
  * all roles can be accessed
@@ -58,7 +39,7 @@ export const constantRoutes = [
   {
     path: '/vnpy',
     component: Layout,
-    redirect: '/vnpy/page',
+    redirect: '/vnpy/info',
     name: 'VNPY',
     meta: { title: '量化设置', icon: 'el-icon-money' },
     children: [
@@ -66,13 +47,21 @@ export const constantRoutes = [
         path: 'page',
         name: 'VNPYpage',
         component: () => import('@/views/vnpy/index'),
-        meta: { title: '交易接口', icon: 'tree' }
+        meta: { title: '交易接口', icon: 'tree' },
+        hidden: true
+      },
+      {
+        path: 'info',
+        name: 'VNPYinfo',
+        component: () => import('@/views/vnpy/info'),
+        meta: { title: '交易信息', icon: 'tree' }
       },
       {
         path: 'period',
         name: 'PeriodConfig',
         component: () => import('@/views/vnpy/period'),
-        meta: { title: '策略配置', icon: 'tree' }
+        meta: { title: '策略配置', icon: 'tree' },
+        hidden: true
       },
       {
         path: 'edit/:port/:flag',
